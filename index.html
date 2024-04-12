@@ -171,41 +171,46 @@
 
 
         function updateEndTimes() {
-            const rows = document.querySelectorAll('#reportTable tbody tr');
-            const statusFilter = document.getElementById('statusFilter').value;
+    const rows = document.querySelectorAll('#reportTable tbody tr');
+    const statusFilter = document.getElementById('statusFilter').value;
 
-            rows.forEach(row => {
-                setInterval(() => {
-                    const endTimeCell = row.querySelector('.endTime');
-                    const timeDifferenceCell = row.querySelector('.timeDifference');
-                    const statusCell = row.cells[3];
-                    const statusSet = row.getAttribute('data-status-set'); // Get status set attribute
-                    const status = generateRandomStatus();
-                    const endTimeString = new Date().toLocaleTimeString();
-                    if (!statusFilter || status === statusFilter) {
-                        // Check if status is not already set
-                        if (statusSet === 'false') {
-                            statusCell.textContent = status;
-                            statusCell.classList.remove('statusDone', 'statusFail');
-                            if (status === 'Done') {
-                                statusCell.classList.add('statusDone');
-                            } else if (status === 'Fail') {
-                                statusCell.classList.add('statusFail');
-                            }
-                            row.setAttribute('data-status-set', 'true'); // Set status set attribute to true
-                        }
+    rows.forEach(row => {
+        setInterval(() => {
+            const endTimeCell = row.querySelector('.endTime');
+            const timeDifferenceCell = row.querySelector('.timeDifference');
+            const statusCell = row.cells[3];
+            const statusSet = row.getAttribute('data-status-set'); // Get status set attribute
+            const status = generateRandomStatus();
+            const endTimeString = new Date().toLocaleTimeString();
+            
+            if (!statusFilter || status === statusFilter) {
+                // Check if status is not already set
+                if (statusSet === 'false') {
+                    statusCell.textContent = status;
+                    statusCell.classList.remove('statusDone', 'statusFail');
+                    if (status === 'Done') {
+                        statusCell.classList.add('statusDone');
+                    } else if (status === 'Fail') {
+                        statusCell.classList.add('statusFail');
                     }
-                    if (endTimeCell.textContent === '') {
-                        endTimeCell.textContent = endTimeString;
-                        const startTimeString = row.cells[4].textContent;
-                        const startTime = new Date(`01/01/2022 ${startTimeString}`);
-                        const endTime = new Date(`01/01/2022 ${endTimeString}`);
-                        const timeDifference = (endTime - startTime) / (1000 * 60); // Calculate time difference in minutes
-                        timeDifferenceCell.textContent = Math.floor(timeDifference); // Display time difference in minutes
-                    }
-                }, 2 * 60000); // 1 minute in milliseconds
-            });
-        }
+                    row.setAttribute('data-status-set', 'true'); // Set status set attribute to true
+                }
+            }
+            if (endTimeCell.textContent === '') {
+                endTimeCell.textContent = endTimeString;
+                const startTimeString = row.cells[4].textContent;
+                const startTime = new Date(`01/01/2022 ${startTimeString}`);
+                const endTime = new Date(`01/01/2022 ${endTimeString}`);
+                let timeDifference = (endTime - startTime) / (1000 * 60); // Calculate time difference in minutes
+                if (status === 'Ins') {
+                    timeDifference = 15; // Fix time difference to 15 minutes for "Ins" status
+                }
+                timeDifferenceCell.textContent = Math.floor(timeDifference); // Display time difference in minutes
+            }
+        }, 2 * 60000); // 1 minute in milliseconds
+    });
+}
+
 
         function handleRefresh() {
             currentBatch++;
