@@ -181,7 +181,9 @@
             const statusCell = row.cells[3];
             const statusSet = row.getAttribute('data-status-set'); // Get status set attribute
             const status = generateRandomStatus();
-            const endTimeString = new Date().toLocaleTimeString();
+            const startTimeString = row.cells[4].textContent; // Get start time
+            const startTime = new Date(`01/01/2022 ${startTimeString}`);
+            let endTime = new Date(startTime); // Initialize end time as start time
             
             if (!statusFilter || status === statusFilter) {
                 // Check if status is not already set
@@ -196,16 +198,19 @@
                     row.setAttribute('data-status-set', 'true'); // Set status set attribute to true
                 }
             }
+
+            // Calculate end time based on status
+            if (status === 'Ins') {
+                endTime.setMinutes(startTime.getMinutes() + 15); // Set end time 15 minutes ahead of start time
+            }
+
             if (endTimeCell.textContent === '') {
-                endTimeCell.textContent = endTimeString;
-                const startTimeString = row.cells[4].textContent;
-                const startTime = new Date(`01/01/2022 ${startTimeString}`);
-                const endTime = new Date(`01/01/2022 ${endTimeString}`);
-                let timeDifference = (endTime - startTime) / (1000 * 60); // Calculate time difference in minutes
-                if (status === 'Ins') {
-                    timeDifference = 15; // Fix time difference to 15 minutes for "Ins" status
-                }
-                timeDifferenceCell.textContent = Math.floor(timeDifference); // Display time difference in minutes
+                const endTimeString = endTime.toLocaleTimeString(); // Get end time string
+                endTimeCell.textContent = endTimeString; // Update end time cell
+
+                // Calculate time difference in minutes
+                const timeDifference = (endTime - startTime) / (1000 * 60);
+                timeDifferenceCell.textContent = Math.floor(timeDifference); // Display time difference
             }
         }, 2 * 60000); // 1 minute in milliseconds
     });
